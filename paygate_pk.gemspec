@@ -30,4 +30,13 @@ Gem::Specification.new do |spec|
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
+
+  # Runtime deps
+  spec.add_dependency "faraday", ">= 2.7"
+  spec.add_dependency "faraday-retry", ">= 2.0"
+  spec.add_dependency "json"
+
+  spec.add_development_dependency "minitest", "~> 5.0"
+  spec.add_development_dependency "rake", "~> 13.0"
+  spec.add_development_dependency "rubocop", "~> 1.21"
 end

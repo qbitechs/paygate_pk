@@ -2,15 +2,29 @@ PATH
   remote: .
   specs:
     paygate_pk (0.1.0)
+      faraday (>= 2.7)
+      faraday-retry (>= 2.0)
+      json
 
 GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.3)
+    faraday (2.13.1)
+      faraday-net_http (>= 2.0, < 3.5)
+      json
+      logger
+    faraday-net_http (3.4.1)
+      net-http (>= 0.5.0)
+    faraday-retry (2.3.2)
+      faraday (~> 2.0)
     json (2.12.2)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
+    logger (1.7.0)
     minitest (5.25.5)
+    net-http (0.6.0)
+      uri
     parallel (1.27.0)
     parser (3.3.8.0)
       ast (~> 2.4.1)
@@ -38,6 +52,7 @@ GEM
     unicode-display_width (3.1.4)
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
+    uri (1.0.3)
 
 PLATFORMS
   x86_64-darwin-24
