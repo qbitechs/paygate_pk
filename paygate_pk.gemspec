@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
   end
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
-  spec.require_paths = ["lib"]
+  spec.require_paths = %w[lib test]
 
   # Runtime deps
   spec.add_dependency "faraday", ">= 2.7"
@@ -41,4 +41,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "nokogiri", ">= 1.16", "< 2.0"
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rubocop", "~> 1.21"
+  spec.add_dependency "webmock"
 end
