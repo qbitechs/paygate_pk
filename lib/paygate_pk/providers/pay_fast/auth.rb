@@ -7,15 +7,17 @@ module PaygatePk
     module PayFast
       # Auth client for PayFast API
       class Auth < Client
+        ENDPOINT = "/Ecommerce/api/Transaction/GetAccessToken"
+
         # Returns Contracts::AccessToken
         # Required by PayFast: MERCHANT_ID, SECURED_KEY, BASKET_ID, TXNAMT, CURRENCY_CODE
         #
-        def get_access_token(basket_id:, amount:, currency: PaygatePk.config.default_currency)
+        def get_access_token(basket_id:, amount:, endpoint: nil)
           ensure_config!
           ensure_args!(basket_id: basket_id, amount: amount, currency: currency)
 
           # Guide endpoint: .../Ecommerce/api/Transaction/GetAccessToken
-          resp  = http.post("/Ecommerce/api/Transaction/GetAccessToken",
+          resp  = http.post(endpoint || ENDPOINT,
                             form: payload(basket_id, amount, currency))
           token = resp.is_a?(Hash) ? (resp["ACCESS_TOKEN"] || resp["access_token"]) : nil
           raise AuthError, "missing ACCESS_TOKEN in response" unless token

@@ -3,6 +3,6 @@
 
 module PaygatePk
   module Contracts
-    HostedCheckout = Struct.new(:provider, :basket_id, :amount, :error, :url, keyword_init: true)
+    HostedCheckout = Struct.new(:provider, :basket_id, :amount, :url, keyword_init: true)
   end
 end

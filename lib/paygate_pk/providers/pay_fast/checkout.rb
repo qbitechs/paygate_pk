@@ -39,6 +39,8 @@ module PaygatePk
         # @param description [String] TXNDESC
         # @param order_date [Date] defaults: Date.today
         # @param checkout_mode [Symbol] :immediate or :delayed (defaults from config)
+        # @param endpoint [Symbol] default to ENDPOINT constant
+
         # @return [PaygatePk::Contracts::HostedCheckout]
         def create!(opts: {})
           validate_config!
@@ -46,7 +48,7 @@ module PaygatePk
 
           form = build_form(opts)
 
-          response = http.post(ENDPOINT, form: form)
+          response = http.post(opts[:endpoint] || ENDPOINT, form: form)
 
           if response
             doc = Nokogiri::HTML(response)
@@ -57,7 +59,6 @@ module PaygatePk
             provider: :payfast,
             basket_id: opts[:basket_id],
             amount: opts[:amount],
-            error: nil,
             url: url
           )
         end
