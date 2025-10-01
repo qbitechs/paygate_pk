@@ -8,6 +8,16 @@ require "bundler/setup"
 
 require "paygate_pk"
 
+begin
+  require "simplecov"
+  SimpleCov.start do
+    add_filter "/test/"
+    enable_coverage :branch
+  end
+rescue LoadError
+  # ok if not installed in some envs
+end
+
 module TestHelpers
   module Config
     def reset_paygate_config!
