@@ -10,7 +10,6 @@ module PaygatePk
         # Returns Contracts::AccessToken
         # Required by PayFast: MERCHANT_ID, SECURED_KEY, BASKET_ID, TXNAMT, CURRENCY_CODE
         #
-        # amount can be Integer (paisa) or decimal/float (rupees) – we coerce to paisa string.
         def get_access_token(basket_id:, amount:, currency: PaygatePk.config.default_currency)
           ensure_config!
           ensure_args!(basket_id: basket_id, amount: amount, currency: currency)

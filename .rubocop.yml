@@ -11,3 +11,14 @@ Style/StringLiteralsInInterpolation:
 
 Layout/LineLength:
   Max: 120
+
+Metrics/MethodLength:
+  Max: 20 # Example: Set maximum method length to 15 lines
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
+
+Metrics/AbcSize:
+  Max: 20

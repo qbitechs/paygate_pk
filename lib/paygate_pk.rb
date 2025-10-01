@@ -11,6 +11,7 @@ require_relative "paygate_pk/contracts/access_token"
 # PayFast
 require_relative "paygate_pk/providers/pay_fast/client"
 require_relative "paygate_pk/providers/pay_fast/auth"
+require_relative "paygate_pk/providers/pay_fast/checkout"
 
 # Main module for PaygatePk
 module PaygatePk
