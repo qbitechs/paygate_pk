@@ -4,7 +4,7 @@ module PaygatePk
   # Global configuration for PaygatePk
   class Config
     attr_accessor :logger, :default_currency, :timeouts, :retry, :user_agent
-    attr_reader   :payfast
+    attr_reader   :pay_fast
 
     def initialize
       @logger = nil

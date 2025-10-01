@@ -30,7 +30,7 @@ module PaygatePk
           missing = []
           missing << :merchant_id if @config.merchant_id.to_s.strip.empty?
           missing << :secured_key if @config.secured_key.to_s.strip.empty?
-          raise ConfigurationError, "PayFast config missing: #{missing.join(", ")}" if missing.present?
+          raise ConfigurationError, "PayFast config missing: #{missing.join(", ")}" unless missing.empty?
         end
 
         def ensure_args!(basket_id:, amount:, currency:)
@@ -38,7 +38,7 @@ module PaygatePk
           missing << :basket_id if basket_id.to_s.strip.empty?
           missing << :amount if amount.nil?
           missing << :currency if currency.to_s.strip.empty?
-          raise ValidationError, "missing required args: #{missing.join(", ")}" if missing.present?
+          raise ValidationError, "missing required args: #{missing.join(", ")}" unless missing.empty?
         end
 
         def payload(basket_id, amount, currency)
