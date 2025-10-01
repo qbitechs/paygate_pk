@@ -3,7 +3,7 @@
 
 require "securerandom"
 require "date"
-require "bigdecimal"
+require "nokogiri"
 
 module PaygatePk
   module Providers
@@ -23,7 +23,7 @@ module PaygatePk
       #     checkout_mode: :immediate
       #   )
       class Checkout < Client
-        ENDPOINT = "/Transaction/PostTransaction"
+        ENDPOINT = "/Ecommerce/api/Transaction/PostTransaction"
 
         REQUIRED_ROOT_KEYS     = %i[token basket_id amount success_url failure_url description].freeze
         REQUIRED_CUSTOMER_KEYS = %i[mobile email].freeze
@@ -101,7 +101,7 @@ module PaygatePk
             "FAILURE_URL" => opts[:failure_url],
             "BASKET_ID" => opts[:basket_id],
             "ORDER_DATE" => Date.today,
-            "CHECKOUT_URL" => normalize_checkout_mode(checkout_mode),
+            "CHECKOUT_URL" => normalize_checkout_mode(opts[:checkout_mode] || config.checkout_mode),
             "CURRENCY_CODE" => PaygatePk.config.default_currency
           }
         end

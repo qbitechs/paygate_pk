@@ -8,7 +8,7 @@ module PaygatePk
     module PayFast
       # HTTP client for PayFast API
       class Client
-        def initialize(config:)
+        def initialize(config: PaygatePk.config.pay_fast)
           @config = config
         end
 

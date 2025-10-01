@@ -15,7 +15,7 @@ module PaygatePk
           ensure_args!(basket_id: basket_id, amount: amount, currency: currency)
 
           # Guide endpoint: .../Ecommerce/api/Transaction/GetAccessToken
-          resp  = http.post("/Transaction/GetAccessToken",
+          resp  = http.post("/Ecommerce/api/Transaction/GetAccessToken",
                             form: payload(basket_id, amount, currency))
           token = resp.is_a?(Hash) ? (resp["ACCESS_TOKEN"] || resp["access_token"]) : nil
           raise AuthError, "missing ACCESS_TOKEN in response" unless token
