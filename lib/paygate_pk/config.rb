@@ -13,8 +13,8 @@ module PaygatePk
       @retry = { max: 2, interval: 0.2, backoff_factor: 2.0, retry_statuses: [429, 500, 502, 503, 504] }
       @user_agent = "paygate_pk/#{PaygatePk::VERSION}"
 
-      @payfast = ProviderConfig.new
-      @frozen  = false
+      @pay_fast = ProviderConfig.new
+      @frozen = false
     end
 
     def freeze!
