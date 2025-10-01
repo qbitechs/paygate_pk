@@ -3,9 +3,17 @@
 require_relative "paygate_pk/version"
 require_relative "paygate_pk/errors"
 require_relative "paygate_pk/config"
+require_relative "paygate_pk/http/client"
 
-# Main module for PaygatePK
-module PaygatePK
+# Contracts used by the endpoint
+require_relative "paygate_pk/contracts/access_token"
+
+# PayFast
+require_relative "paygate_pk/providers/pay_fast/client"
+require_relative "paygate_pk/providers/pay_fast/auth"
+
+# Main module for PaygatePk
+module PaygatePk
   class << self
     def configure
       yield(config)
@@ -13,7 +21,7 @@ module PaygatePK
     end
 
     def config
-      @config ||= PaygatePK::Config.new
+      @config ||= PaygatePk::Config.new
     end
   end
 end

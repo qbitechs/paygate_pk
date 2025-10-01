@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module PaygatePK
+module PaygatePk
   class Error < StandardError; end
   class ConfigurationError < Error; end
 

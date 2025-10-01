@@ -5,7 +5,7 @@ require "faraday/retry"
 require "json"
 require "securerandom"
 
-module PaygatePK
+module PaygatePk
   module HTTP
     # Simple HTTP client using Faraday
     class Client
@@ -56,14 +56,14 @@ module PaygatePK
         parse_body(resp)
       rescue Faraday::ClientError => e
         body = e.response ? e.response[:body] : nil
-        raise PaygatePK::HTTPError.new(e.message,
+        raise PaygatePk::HTTPError.new(e.message,
                                        status: e.response && e.response[:status],
                                        body: body)
       end
 
       def base_headers
         {
-          "User-Agent" => PaygatePK.config.user_agent || "paygate_pk",
+          "User-Agent" => PaygatePk.config.user_agent || "paygate_pk",
           "X-Request-Id" => SecureRandom.uuid
         }.merge(@headers)
       end

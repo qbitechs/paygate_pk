@@ -1,0 +1,56 @@
+# frozen_string_literal: true
+
+require "date"
+
+module PaygatePk
+  module Providers
+    module PayFast
+      # Auth client for PayFast API
+      class Auth < Client
+        # Returns Contracts::AccessToken
+        # Required by PayFast: MERCHANT_ID, SECURED_KEY, BASKET_ID, TXNAMT, CURRENCY_CODE
+        #
+        # amount can be Integer (paisa) or decimal/float (rupees) – we coerce to paisa string.
+        def get_access_token(basket_id:, amount:, currency: PaygatePk.config.default_currency)
+          ensure_config!
+          ensure_args!(basket_id: basket_id, amount: amount, currency: currency)
+
+          # Guide endpoint: .../Ecommerce/api/Transaction/GetAccessToken
+          resp  = http.post("/Transaction/GetAccessToken",
+                            form: payload(basket_id, amount, currency))
+          token = resp.is_a?(Hash) ? (resp["ACCESS_TOKEN"] || resp["access_token"]) : nil
+          raise AuthError, "missing ACCESS_TOKEN in response" unless token
+
+          Contracts::AccessToken.new(token: token, raw: resp)
+        end
+
+        private
+
+        def ensure_config!
+          missing = []
+          missing << :merchant_id if @config.merchant_id.to_s.strip.empty?
+          missing << :secured_key if @config.secured_key.to_s.strip.empty?
+          raise ConfigurationError, "PayFast config missing: #{missing.join(", ")}" if missing.present?
+        end
+
+        def ensure_args!(basket_id:, amount:, currency:)
+          missing = []
+          missing << :basket_id if basket_id.to_s.strip.empty?
+          missing << :amount if amount.nil?
+          missing << :currency if currency.to_s.strip.empty?
+          raise ValidationError, "missing required args: #{missing.join(", ")}" if missing.present?
+        end
+
+        def payload(basket_id, amount, currency)
+          {
+            "MERCHANT_ID" => @config.merchant_id,
+            "SECURED_KEY" => @config.secured_key,
+            "BASKET_ID" => basket_id,
+            "TXNAMT" => amount.to_s,
+            "CURRENCY_CODE" => currency
+          }
+        end
+      end
+    end
+  end
+end
