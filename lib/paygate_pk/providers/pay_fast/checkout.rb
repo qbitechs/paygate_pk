@@ -86,25 +86,30 @@ module PaygatePk
 
         # -- Builders -----------------------------------------------------------
 
-        def build_form(opts)
+        def merchant_params
           {
             "MERCHANT_ID" => config.merchant_id,
-            "MERCHANT_NAME" => merchant_name_default,
-            "TOKEN" => opts[:token],
-            "PROCCODE" => "00",
-            "TXNAMT" => opts[:amount].to_s,
-            "CUSTOMER_MOBILE_NO" => opts[:customer][:mobile],
-            "CUSTOMER_EMAIL_ADDRESS" => opts[:customer][:email],
-            "SIGNATURE" => SecureRandom.hex(16),
-            "VERSION" => PaygatePk::VERSION,
-            "TXNDESC" => opts[:description],
-            "SUCCESS_URL" => opts[:success_url],
-            "FAILURE_URL" => opts[:failure_url],
-            "BASKET_ID" => opts[:basket_id],
-            "ORDER_DATE" => Date.today,
-            "CHECKOUT_URL" => normalize_checkout_mode(opts[:checkout_mode] || config.checkout_mode),
-            "CURRENCY_CODE" => PaygatePk.config.default_currency
+            "MERCHANT_NAME" => merchant_name_default
           }
+        end
+
+        def build_form(opts)
+          merchant_params.merge({
+                                  "TOKEN" => opts[:token],
+                                  "PROCCODE" => "00",
+                                  "TXNAMT" => opts[:amount].to_s,
+                                  "CUSTOMER_MOBILE_NO" => opts[:customer][:mobile],
+                                  "CUSTOMER_EMAIL_ADDRESS" => opts[:customer][:email],
+                                  "SIGNATURE" => SecureRandom.hex(16),
+                                  "VERSION" => PaygatePk::VERSION,
+                                  "TXNDESC" => opts[:description],
+                                  "SUCCESS_URL" => opts[:success_url],
+                                  "FAILURE_URL" => opts[:failure_url],
+                                  "BASKET_ID" => opts[:basket_id],
+                                  "ORDER_DATE" => Date.today,
+                                  "CHECKOUT_URL" => normalize_checkout_mode(opts[:checkout_mode] || config.checkout_mode),
+                                  "CURRENCY_CODE" => PaygatePk.config.default_currency
+                                })
         end
 
         # -- Helpers ------------------------------------------------------------
