@@ -50,8 +50,6 @@ module PaygatePk
 
           response = http.post(opts[:endpoint] || ENDPOINT, form: form)
 
-          puts "RESPONSE::: #{response.inspect}"
-
           PaygatePk::Contracts::HostedCheckout.new(
             provider: :payfast,
             basket_id: opts[:basket_id],
@@ -92,23 +90,40 @@ module PaygatePk
           }
         end
 
+        def order_params(opts)
+          {
+            "BASKET_ID" => opts[:basket_id],
+            "TXNDESC" => opts[:description],
+            "TXNAMT" => opts[:amount].to_s,
+            "CURRENCY_CODE" => PaygatePk.config.default_currency,
+            "ORDER_DATE" => (opts[:order_date] || Date.today).to_s,
+            "SUCCESS_URL" => opts[:success_url],
+            "FAILURE_URL" => opts[:failure_url],
+            "CHECKOUT_URL" => normalize_checkout_mode(opts[:checkout_mode] || config.checkout_mode)
+          }
+        end
+
+        def customer_params(opts)
+          {
+            "CUSTOMER_MOBILE_NO" => opts[:customer][:mobile],
+            "CUSTOMER_EMAIL_ADDRESS" => opts[:customer][:email]
+          }
+        end
+
+        def generic_params(opts)
+          {
+            "TOKEN" => opts[:token],
+            "PROCCODE" => "00",
+            "SIGNATURE" => SecureRandom.hex(16),
+            "VERSION" => PaygatePk::VERSION
+          }
+        end
+
         def build_form(opts)
-          merchant_params.merge({
-                                  "TOKEN" => opts[:token],
-                                  "PROCCODE" => "00",
-                                  "TXNAMT" => opts[:amount].to_s,
-                                  "CUSTOMER_MOBILE_NO" => opts[:customer][:mobile],
-                                  "CUSTOMER_EMAIL_ADDRESS" => opts[:customer][:email],
-                                  "SIGNATURE" => SecureRandom.hex(16),
-                                  "VERSION" => PaygatePk::VERSION,
-                                  "TXNDESC" => opts[:description],
-                                  "SUCCESS_URL" => opts[:success_url],
-                                  "FAILURE_URL" => opts[:failure_url],
-                                  "BASKET_ID" => opts[:basket_id],
-                                  "ORDER_DATE" => Date.today,
-                                  "CHECKOUT_URL" => normalize_checkout_mode(opts[:checkout_mode] || config.checkout_mode),
-                                  "CURRENCY_CODE" => PaygatePk.config.default_currency
-                                })
+          merchant_params
+            .merge(order_params(opts))
+            .merge(customer_params(opts))
+            .merge(generic_params(opts))
         end
 
         # -- Helpers ------------------------------------------------------------

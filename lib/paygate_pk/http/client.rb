@@ -37,28 +37,63 @@ module PaygatePk
 
       private
 
+      # rubocop:disable Metrics/ParameterLists
       def request(method, path, json: nil, form: nil, params: nil, headers: {})
-        resp = @conn.run_request(method, path, nil, base_headers.merge(headers)) do |req|
-          req.options.timeout      = @timeouts[:read_timeout] if @timeouts[:read_timeout]
-          req.options.open_timeout = @timeouts[:open_timeout] if @timeouts[:open_timeout]
-          req.params.update(params) if params
-
-          if json
-            req.headers["Content-Type"] = "application/json"
-            req.body = JSON.generate(json)
-          elsif form
-            req.headers["Content-Type"] = "application/x-www-form-urlencoded"
-            req.body = URI.encode_www_form(form)
-          end
+        resp = execute_request(method, path, params, headers) do |req|
+          configure_timeouts(req)
+          set_request_body(req, json, form)
         end
 
         log_response(resp)
         parse_body(resp)
       rescue Faraday::ClientError => e
-        body = e.response ? e.response[:body] : nil
-        raise PaygatePk::HTTPError.new(e.message,
-                                       status: e.response && e.response[:status],
-                                       body: body)
+        handle_client_error(e)
+      end
+      # rubocop:enable Metrics/ParameterLists
+
+      def execute_request(method, path, params, headers)
+        @conn.run_request(method, path, nil, merged_headers(headers)) do |req|
+          req.params.update(params) if params
+          yield req if block_given?
+        end
+      end
+
+      def merged_headers(headers)
+        base_headers.merge(headers)
+      end
+
+      def configure_timeouts(req)
+        req.options.timeout = @timeouts[:read_timeout] if @timeouts[:read_timeout]
+        req.options.open_timeout = @timeouts[:open_timeout] if @timeouts[:open_timeout]
+      end
+
+      def set_request_body(req, json, form)
+        if json
+          set_json_body(req, json)
+        elsif form
+          set_form_body(req, form)
+        end
+      end
+
+      def set_json_body(req, json)
+        req.headers["Content-Type"] = "application/json"
+        req.body = JSON.generate(json)
+      end
+
+      def set_form_body(req, form)
+        req.headers["Content-Type"] = "application/x-www-form-urlencoded"
+        req.body = URI.encode_www_form(form)
+      end
+
+      def handle_client_error(error)
+        body = error.response&.dig(:body)
+        status = error.response&.dig(:status)
+
+        raise PaygatePk::HTTPError.new(
+          error.message,
+          status: status,
+          body: body
+        )
       end
 
       def base_headers

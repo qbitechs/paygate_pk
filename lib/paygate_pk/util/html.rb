@@ -4,6 +4,7 @@ require "nokogiri"
 
 module PaygatePk
   module Util
+    # HTML parsing utilities
     module Html
       module_function
 
