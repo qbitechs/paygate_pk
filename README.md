@@ -1,24 +1,99 @@
 # PaygatePk
 
-TODO: Delete this and the text below, and describe your gem
+Unified Ruby wrapper for PayFast (and soon Easypaisa) payments in Pakistan.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/paygate_pk`. To experiment with that code, run `bin/console` for an interactive prompt.
+This gem provides a clean, provider-agnostic interface to obtain access tokens and create hosted checkouts with PayFast. It wraps HTTP details, validates required fields, and exposes simple, Ruby-friendly objects. Rails-friendly configuration is included; IPN verification and recurring/tokenized flows are on the roadmap.
+
+## Requirements
+
+- Ruby ≥ 3.1
+- Faraday (runtime, included by gemspec)
+- Nokogiri (runtime, for HTML redirect parsing, included)
+- (Dev) Byebug, SimpleCov, RuboCop — optional
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
-
 Install the gem and add to the application's Gemfile by executing:
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+    $ bundle add "paygate_pk", "~> 0.1.0"
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+    $ gem install "paygate_pk", "~> 0.1.0"
 
 ## Usage
 
-TODO: Write usage instructions here
+# config/initializers/paygate_pk.rb
+
+PaygatePk.configure do |c|
+c.default_currency = "PKR"
+c.user_agent = "paygate_pk/#{PaygatePk::VERSION}"
+
+# PayFast base host only; endpoints include /Ecommerce/api internally
+
+c.payfast.base_url = "https://ipguat.apps.net.pk"
+c.payfast.merchant_id = ENV.fetch("PAYFAST_MERCHANT_ID")
+c.payfast.secured_key = ENV.fetch("PAYFAST_SECURED_KEY")
+c.payfast.checkout_mode = :immediate # or :delayed
+
+# Optional: tune timeouts & retries
+
+c.timeouts = { open_timeout: 5, read_timeout: 10 }
+c.retry = { max: 2, interval: 0.2, backoff_factor: 2.0, retry_statuses: [429, 500, 502, 503, 504] }
+end
+
+## QuickStart
+
+# 1) Get Access Token (PayFast)
+
+```ruby
+auth = PaygatePk::Providers::PayFast::Auth.new(config: PaygatePk.config.payfast)
+
+token_obj = auth.get_access_token(
+basket_id: "B-1001",
+amount: 1500
+
+# currency: "PKR", # optional; defaults to PaygatePk.config.default_currency
+
+# endpoint: "/Ecommerce/api/Transaction/GetAccessToken" # optional override
+
+)
+
+puts token_obj.token # => "ACCESS_TOKEN_STRING"
+
+```
+
+# 2) Create Hosted Checkout (PayFast)
+
+```ruby
+checkout = PaygatePk::Providers::PayFast::Checkout.new(config: PaygatePk.config.payfast)
+
+hc = checkout.create!(opts: {
+  token:       token_obj.token,
+  basket_id:   "B-1001",
+  amount:      1500, # paisa (Rs 15.00)
+  customer:    { mobile: "03001234567", email: "buyer@example.com" },
+  success_url: "https://your-app.example.com/payments/success",
+  failure_url: "https://your-app.example.com/payments/failure",
+  description: "Order #1001"
+  # checkout_mode: :immediate,  # optional; default from config
+  # endpoint: "/Ecommerce/api/Transaction/PostTransaction" # optional override
+})
+
+hc.url # => "https://gateway.payfast/redirect/ABC123"
+# Redirect the buyer to hc.url
+```
+
+# Error handling
+
+All errors inherit from PaygatePk::Error:
+
+- PaygatePk::ConfigurationError — missing/invalid configuration (e.g., merchant_id, secured_key, or base_url).
+- PaygatePk::ValidationError — missing required method arguments or required form fields.
+- PaygatePk::HTTPError — network/HTTP failure (wraps response status & body).
+- PaygatePk::AuthError — auth call succeeded at HTTP level but token missing/invalid in body.
+- PaygatePk::SignatureError — reserved for webhook/IPN verification (upcoming).
+- PaygatePk::ProviderError — reserved for provider business-rule failures.
 
 ## Development
 
