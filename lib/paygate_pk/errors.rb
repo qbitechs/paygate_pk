@@ -4,6 +4,7 @@ module PaygatePk
   class Error < StandardError; end
   class ConfigurationError < Error; end
 
+  # Raised when a request validation fails.
   class ValidationError < Error
     attr_reader :details
 
@@ -13,6 +14,7 @@ module PaygatePk
     end
   end
 
+  # Raised for HTTP errors, e.g. non-2xx responses.
   class HTTPError < Error
     attr_reader :status, :body
 

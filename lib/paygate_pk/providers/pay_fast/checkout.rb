@@ -50,16 +50,15 @@ module PaygatePk
 
           response = http.post(opts[:endpoint] || ENDPOINT, form: form)
 
-          if response
-            doc = Nokogiri::HTML(response)
-            url = doc.at("a")["href"] if doc.at("a")
-          end
+          puts "RESPONSE::: #{response.inspect}"
 
           PaygatePk::Contracts::HostedCheckout.new(
             provider: :payfast,
             basket_id: opts[:basket_id],
             amount: opts[:amount],
-            url: url
+            url: PaygatePk::Util::Html.first_anchor_href(response),
+            form: PaygatePk::Util::Html.extract_form(response),
+            raw: response
           )
         end
 
