@@ -23,24 +23,28 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
+# Initializer
+
+```ruby
 # config/initializers/paygate_pk.rb
 
 PaygatePk.configure do |c|
-c.default_currency = "PKR"
-c.user_agent = "paygate_pk/#{PaygatePk::VERSION}"
+  c.default_currency = "PKR"
+  c.user_agent = "paygate_pk/#{PaygatePk::VERSION}"
 
-# PayFast base host only; endpoints include /Ecommerce/api internally
+  # PayFast base host only; endpoints include /Ecommerce/api internally
 
-c.payfast.base_url = "https://ipguat.apps.net.pk"
-c.payfast.merchant_id = ENV.fetch("PAYFAST_MERCHANT_ID")
-c.payfast.secured_key = ENV.fetch("PAYFAST_SECURED_KEY")
-c.payfast.checkout_mode = :immediate # or :delayed
+  c.payfast.base_url = "https://ipguat.apps.net.pk"
+  c.payfast.merchant_id = ENV.fetch("PAYFAST_MERCHANT_ID")
+  c.payfast.secured_key = ENV.fetch("PAYFAST_SECURED_KEY")
+  c.payfast.checkout_mode = :immediate # or :delayed
 
-# Optional: tune timeouts & retries
+  # Optional: tune timeouts & retries
 
-c.timeouts = { open_timeout: 5, read_timeout: 10 }
-c.retry = { max: 2, interval: 0.2, backoff_factor: 2.0, retry_statuses: [429, 500, 502, 503, 504] }
+  c.timeouts = { open_timeout: 5, read_timeout: 10 }
+  c.retry = { max: 2, interval: 0.2, backoff_factor: 2.0, retry_statuses: [429, 500, 502, 503, 504] }
 end
+```
 
 ## QuickStart
 
