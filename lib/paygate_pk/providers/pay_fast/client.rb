@@ -12,6 +12,14 @@ module PaygatePk
           @config = config
         end
 
+        def get_access_token(**params)
+          Auth.new(config: @config).get_access_token(**params)
+        end
+
+        def create_checkout(**params)
+          Checkout.new(config: @config).create!(**params)
+        end
+
         private
 
         attr_reader :config
