@@ -16,6 +16,10 @@ module PaygatePk
           Auth.new(config: @config).get_access_token(**params)
         end
 
+        def verify_ipn!(params)
+          Webhook.new(config: @config).verify!(params)
+        end
+
         def create_checkout(**params)
           Checkout.new(config: @config).create!(**params)
         end

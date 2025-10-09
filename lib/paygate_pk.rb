@@ -10,6 +10,7 @@ require_relative "paygate_pk/contracts/access_token"
 require_relative "paygate_pk/contracts/hosted_checkout"
 require_relative "paygate_pk/contracts/bearer_token"
 require_relative "paygate_pk/contracts/instrument"
+require_relative "paygate_pk/contracts/webhook_event"
 
 # PayFast
 require_relative "paygate_pk/providers/pay_fast/client"
@@ -18,6 +19,7 @@ require_relative "paygate_pk/providers/pay_fast/checkout"
 require_relative "paygate_pk/providers/pay_fast/tokenization/token"
 
 require_relative "paygate_pk/util/html"
+require_relative "paygate_pk/util/signature"
 
 # Main module for PaygatePk
 module PaygatePk
