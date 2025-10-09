@@ -8,11 +8,13 @@ require_relative "paygate_pk/http/client"
 # Contracts used by the endpoint
 require_relative "paygate_pk/contracts/access_token"
 require_relative "paygate_pk/contracts/hosted_checkout"
+require_relative "paygate_pk/contracts/bearer_token"
 
 # PayFast
 require_relative "paygate_pk/providers/pay_fast/client"
 require_relative "paygate_pk/providers/pay_fast/auth"
 require_relative "paygate_pk/providers/pay_fast/checkout"
+require_relative "paygate_pk/providers/pay_fast/tokenization/token"
 
 require_relative "paygate_pk/util/html"
 

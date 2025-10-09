@@ -38,6 +38,7 @@ module PaygatePk
         @username = nil
         @password = nil
         @store_id = nil
+        @api_base_url = nil
       end
     end
   end

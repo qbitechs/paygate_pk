@@ -20,6 +20,10 @@ module PaygatePk
           Checkout.new(config: @config).create!(**params)
         end
 
+        def get_bearer_token(**params)
+          Tokenization::Token.new(config: @config).get(**params)
+        end
+
         private
 
         attr_reader :config
