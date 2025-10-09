@@ -20,6 +20,7 @@ require_relative "paygate_pk/providers/pay_fast/tokenization/token"
 
 require_relative "paygate_pk/util/html"
 require_relative "paygate_pk/util/signature"
+require_relative "paygate_pk/util/security"
 
 # Main module for PaygatePk
 module PaygatePk
