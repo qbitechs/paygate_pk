@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rack/utils"
-
 module PaygatePk
   module Providers
     module PayFast
@@ -25,7 +23,7 @@ module PaygatePk
             merchant_id: config.merchant_id,
             payfast_err_code: params["err_code"]
           )
-          return if Rack::Utils.secure_compare(expected, params["validation_hash"])
+          return if PaygatePk::Util::Security.secure_compare(expected, params["validation_hash"])
 
           raise PaygatePk::SignatureError, "invalid validation_hash"
         end
