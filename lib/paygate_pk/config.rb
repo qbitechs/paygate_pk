@@ -28,7 +28,8 @@ module PaygatePk
 
     # Provider-specific configuration
     class ProviderConfig
-      attr_accessor :base_url, :merchant_id, :secured_key, :checkout_mode, :username, :password, :store_id
+      attr_accessor :api_base_url, :base_url, :merchant_id, :secured_key, :checkout_mode, :username, :password,
+                    :store_id
 
       def initialize
         @base_url = nil

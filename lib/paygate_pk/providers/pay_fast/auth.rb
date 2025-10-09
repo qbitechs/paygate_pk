@@ -27,6 +27,10 @@ module PaygatePk
 
         private
 
+        def base_url
+          config.base_url
+        end
+
         def ensure_config!
           missing = []
           missing << :merchant_id if @config.merchant_id.to_s.strip.empty?

@@ -32,7 +32,7 @@ module PaygatePk
           raise ConfigurationError, "PayFast base_url not set" unless config.base_url
 
           PaygatePk::HTTP::Client.new(
-            base_url: config.base_url,
+            base_url: base_url,
             headers: { "Accept" => "application/json" },
             timeouts: PaygatePk.config.timeouts,
             retry_conf: PaygatePk.config.retry,

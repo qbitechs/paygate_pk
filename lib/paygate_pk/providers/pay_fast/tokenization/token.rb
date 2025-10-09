@@ -15,7 +15,6 @@ module PaygatePk
           # Optional: customer_ip, reserved_1..3, api_version
           # Returns: PaygatePk::Contracts::BearerToken
           def get(grant_type:, options: {})
-            @config.base_url = "https://apipxyuat.apps.net.pk:8443/"
             mid = config.merchant_id
             sec = config.secured_key
 
@@ -34,6 +33,10 @@ module PaygatePk
           end
 
           private
+
+          def base_url
+            config.api_base_url
+          end
 
           def body(mid, sec, grant_type, options)
             attrs = {
