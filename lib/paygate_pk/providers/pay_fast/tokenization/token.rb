@@ -9,12 +9,13 @@ module PaygatePk
         # used to generate the bearer_token
         class Token < PaygatePk::Providers::PayFast::Client
           TOKEN_ENDPOINT = "/api/token"
+          DEFAULT_GRANT_TYPE = "client_credentials"
 
           # 3.1 Authentication Access Token
           # Required: merchant_id, secured_key, grant_type
           # Optional: customer_ip, reserved_1..3, api_version
           # Returns: PaygatePk::Contracts::BearerToken
-          def get(grant_type:, options: {})
+          def get(grant_type: DEFAULT_GRANT_TYPE, options: {})
             mid = config.merchant_id
             sec = config.secured_key
 
