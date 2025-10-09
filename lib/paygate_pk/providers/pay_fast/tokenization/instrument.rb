@@ -6,8 +6,6 @@ module PaygatePk
       module Tokenization
         # used to generate the bearer_token
         class Instrument < PaygatePk::Providers::PayFast::Client
-          include PaygatePK::Util::Validator
-
           INSTRUMENTS_ENDPOINT = "/api/user/instruments"
 
           def list(token:, user_id:, mobile_number:, options: {})
@@ -15,13 +13,13 @@ module PaygatePk
                             user_id: user_id,
                             mobile_number: mobile_number)
 
-            resp = http.get(LIST_INSTRUMENTS_PATH,
-                            form: body(user_id, mobile_number, options),
-                            headers: { "Authorization" => "Bearer #{bearer}" })
+            resp = http.get(INSTRUMENTS_ENDPOINT,
+                            params: body(user_id, mobile_number, options),
+                            headers: { "Authorization" => "Bearer #{token}" })
 
             # Response is an array of hashes with instrument_token, account_type, description, instrument_alias
             Array(resp).map do |h|
-              PaygatePk::Contracts::PaymentInstrument.new(
+              PaygatePk::Contracts::Instrument.new(
                 instrument_token: h["instrument_token"],
                 account_type: h["account_type"],
                 description: h["description"],
@@ -32,6 +30,10 @@ module PaygatePk
           end
 
           private
+
+          def base_url
+            config.api_base_url
+          end
 
           def body(user_id, mobile_no, options)
             attrs = {
