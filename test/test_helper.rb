@@ -24,12 +24,14 @@ module TestHelpers
       PaygatePk.instance_variable_set(:@config, PaygatePk::Config.new)
     end
 
-    def configure_payfast!(base_url: "https://example.test", merchant_id: "M123", secured_key: "SKEY")
+    def configure_payfast!(base_url: "https://example.test", merchant_id: "M123", secured_key: "SKEY",
+                           api_base_url: nil)
       PaygatePk.configure do |c|
         c.default_currency = "PKR"
         c.pay_fast.base_url    = base_url
         c.pay_fast.merchant_id = merchant_id
         c.pay_fast.secured_key = secured_key
+        c.pay_fast.api_base_url = api_base_url
       end
     end
   end
