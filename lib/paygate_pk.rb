@@ -9,6 +9,7 @@ require_relative "paygate_pk/http/client"
 require_relative "paygate_pk/contracts/access_token"
 require_relative "paygate_pk/contracts/hosted_checkout"
 require_relative "paygate_pk/contracts/bearer_token"
+require_relative "paygate_pk/contracts/instrument"
 
 # PayFast
 require_relative "paygate_pk/providers/pay_fast/client"

@@ -24,6 +24,10 @@ module PaygatePk
           Tokenization::Token.new(config: @config).get(**params)
         end
 
+        def instruments(**params)
+          Tokenization::Instrument.new(config: @config).list(**params)
+        end
+
         private
 
         attr_reader :config
