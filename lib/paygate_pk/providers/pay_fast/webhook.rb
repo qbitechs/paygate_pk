@@ -7,9 +7,9 @@ module PaygatePk
       # Returns PaygatePk::Contracts::WebhookEvent on success, raises on failure.
       class Webhook
         def verify!(raw_params)
-          validate_required_params
-
           params = normalize_keys(raw_params)
+
+          validate_required_params(params)
           verify_signature(params)
           build_webhook(params, raw_params)
         end
@@ -19,8 +19,8 @@ module PaygatePk
         def verify_signature(params)
           expected = PaygatePk::Util::Signature::Payfast.validation_hash(
             basket_id: params["basket_id"],
-            merchant_secret_key: config.secured_key,
-            merchant_id: config.merchant_id,
+            merchant_secret_key: PaygatePk.config.pay_fast.secured_key,
+            merchant_id: PaygatePk.config.pay_fast.merchant_id,
             payfast_err_code: params["err_code"]
           )
           return if PaygatePk::Util::Security.secure_compare(expected, params["validation_hash"])
@@ -28,7 +28,7 @@ module PaygatePk
           raise PaygatePk::SignatureError, "invalid validation_hash"
         end
 
-        def validate_required_params
+        def validate_required_params(params)
           %w[basket_id err_code validation_hash].each do |k|
             raise PaygatePk::SignatureError, "missing #{k}" unless present?(params[k])
           end
@@ -43,7 +43,7 @@ module PaygatePk
         end
 
         def present?(val)
-          !(v.nil? || (val.respond_to?(:empty?) && val.empty?))
+          !(val.nil? || (val.respond_to?(:empty?) && val.empty?))
         end
 
         def truthy?(val)
