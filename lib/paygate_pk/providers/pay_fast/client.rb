@@ -17,7 +17,7 @@ module PaygatePk
         end
 
         def verify_ipn!(params)
-          Webhook.new(config: @config).verify!(params)
+          Webhook.new.verify!(params)
         end
 
         def create_checkout(**params)
