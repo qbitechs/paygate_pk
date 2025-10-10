@@ -16,6 +16,7 @@ require_relative "paygate_pk/contracts/webhook_event"
 require_relative "paygate_pk/providers/pay_fast/client"
 require_relative "paygate_pk/providers/pay_fast/auth"
 require_relative "paygate_pk/providers/pay_fast/checkout"
+require_relative "paygate_pk/providers/pay_fast/webhook"
 require_relative "paygate_pk/providers/pay_fast/tokenization/token"
 
 require_relative "paygate_pk/util/html"
