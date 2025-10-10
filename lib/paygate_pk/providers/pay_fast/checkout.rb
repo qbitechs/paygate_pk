@@ -62,6 +62,10 @@ module PaygatePk
 
         private
 
+        def base_url
+          config.base_url
+        end
+
         # -- Validation ---------------------------------------------------------
 
         def validate_config!
