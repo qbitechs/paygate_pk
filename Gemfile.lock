@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    paygate_pk (0.1.0)
+    paygate_pk (0.1.1)
       faraday (>= 2.7)
       faraday-retry (>= 2.0)
       json

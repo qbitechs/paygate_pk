@@ -34,10 +34,10 @@ PaygatePk.configure do |c|
 
   # PayFast base host only; endpoints include /Ecommerce/api internally
 
-  c.payfast.base_url = "https://ipguat.apps.net.pk"
-  c.payfast.merchant_id = ENV.fetch("PAYFAST_MERCHANT_ID")
-  c.payfast.secured_key = ENV.fetch("PAYFAST_SECURED_KEY")
-  c.payfast.checkout_mode = :immediate # or :delayed
+  c.pay_fast.base_url = "https://ipguat.apps.net.pk"
+  c.pay_fast.merchant_id = ENV.fetch("PAYFAST_MERCHANT_ID")
+  c.pay_fast.secured_key = ENV.fetch("PAYFAST_SECURED_KEY")
+  c.pay_fast.api_base_url = "https://api.getfrompayfast.com"
 
   # Optional: tune timeouts & retries
 
@@ -51,7 +51,8 @@ end
 # 1) Get Access Token (PayFast)
 
 ```ruby
-auth = PaygatePk::Providers::PayFast::Auth.new(config: PaygatePk.config.payfast)
+
+client = PaygatePk::Providers::PayFast::Auth.new
 
 token_obj = auth.get_access_token(
 basket_id: "B-1001",
@@ -67,25 +68,24 @@ puts token_obj.token # => "ACCESS_TOKEN_STRING"
 
 ```
 
-# 2) Create Hosted Checkout (PayFast)
+# 2) Verify IPN
 
 ```ruby
-checkout = PaygatePk::Providers::PayFast::Checkout.new(config: PaygatePk.config.payfast)
+verified_data  = client.verify_ipn!(request.params)
 
-hc = checkout.create!(opts: {
-  token:       token_obj.token,
-  basket_id:   "B-1001",
-  amount:      1500, # paisa (Rs 15.00)
-  customer:    { mobile: "03001234567", email: "buyer@example.com" },
-  success_url: "https://your-app.example.com/payments/success",
-  failure_url: "https://your-app.example.com/payments/failure",
-  description: "Order #1001"
-  # checkout_mode: :immediate,  # optional; default from config
-  # endpoint: "/Ecommerce/api/Transaction/PostTransaction" # optional override
-})
+:provider,          # Symbol e.g., :payfast
+:transaction_id,    # String or nil
+:basket_id,         # String
+:order_date,        # String (YYYY-MM-DD) or Time/Date if you coerce later
+:approved,          # Boolean (true if err_code == "000")
+:code,              # Provider code, e.g., "000"
+:message,           # Human-readable message
+:amount,            # String/Integer (as received)
+:currency,          # String "PKR" etc.
+:instrument_token,  # String or nil (for tokenized flows)
+:recurring,         # Boolean
+:raw,               # Original params Hash (unmodified input)
 
-hc.url # => "https://gateway.payfast/redirect/ABC123"
-# Redirect the buyer to hc.url
 ```
 
 # Error handling
