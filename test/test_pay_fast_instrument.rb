@@ -72,6 +72,7 @@ class TestPayFastInstrument < Minitest::Test
     end
   end
 
+  # rubocop:disable Naming/VariableNumber
   def test_body_with_options
     options = {
       customer_ip: "1.2.3.4",
@@ -87,4 +88,5 @@ class TestPayFastInstrument < Minitest::Test
     assert_equal "baz", body["reserved_3"]
     assert_equal "v2", body["api_version"]
   end
+  # rubocop:enable Naming/VariableNumber
 end

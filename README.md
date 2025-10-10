@@ -15,11 +15,11 @@ This gem provides a clean, provider-agnostic interface to obtain access tokens a
 
 Install the gem and add to the application's Gemfile by executing:
 
-    $ bundle add "paygate_pk", "~> 0.1.0"
+    $ bundle add "paygate_pk", "~> 0.2.0"
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
-    $ gem install "paygate_pk", "~> 0.1.0"
+    $ gem install "paygate_pk", "~> 0.2.0"
 
 ## Usage
 

@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2.0] - 2025-10-09
+## [0.2.0] - 2025-10-10
 
 - Added: IPN verification, Tokenization 3.1 & 3.15.
 - Changed: renamed token methods (old name deprecated).
