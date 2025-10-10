@@ -15,6 +15,8 @@ module PaygatePk
       :currency,          # String "PKR" etc.
       :instrument_token,  # String or nil (for tokenized flows)
       :recurring,         # Boolean
+      :payment_method,
+      :merchant_amount,
       :raw,               # Original params Hash (unmodified input)
       keyword_init: true
     )
