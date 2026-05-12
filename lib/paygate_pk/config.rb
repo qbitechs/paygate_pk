@@ -6,17 +6,23 @@ module PaygatePk
   # Typical Rails usage:
   #   PaygatePk.configure do |c|
   #     c.default_currency = "PKR"
+  #
   #     c.pay_fast.environment   = Rails.env.production? ? :production : :sandbox
   #     c.pay_fast.merchant_id   = ENV["PAYFAST_MERCHANT_ID"]
   #     c.pay_fast.secured_key   = ENV["PAYFAST_SECURED_KEY"]
   #     c.pay_fast.merchant_name = "Acme Store"
-  #     c.pay_fast.store_id      = ENV["PAYFAST_STORE_ID"]
+  #
+  #     c.easy_paisa.environment = Rails.env.production? ? :production : :sandbox
+  #     c.easy_paisa.username    = ENV["EASYPAISA_USERNAME"]
+  #     c.easy_paisa.password    = ENV["EASYPAISA_PASSWORD"]
+  #     c.easy_paisa.store_id    = ENV["EASYPAISA_STORE_ID"]
+  #     c.easy_paisa.account_num = ENV["EASYPAISA_ACCOUNT"]
   #   end
   #
   # After `configure`, the config object is frozen — mutating it raises.
   class Config
     attr_accessor :default_currency, :timeouts, :retry, :user_agent, :logger
-    attr_reader   :pay_fast
+    attr_reader   :pay_fast, :easy_paisa
 
     def initialize
       @default_currency = "PKR"
@@ -28,6 +34,7 @@ module PaygatePk
       @user_agent       = "paygate_pk/#{PaygatePk::VERSION}"
       @logger           = nil
       @pay_fast         = PayFastConfig.new
+      @easy_paisa       = EasyPaisaConfig.new
       @configured       = false
     end
 
@@ -36,6 +43,7 @@ module PaygatePk
     def freeze!
       @configured = true
       @pay_fast.freeze
+      @easy_paisa.freeze
       freeze
       self
     end
@@ -84,6 +92,42 @@ module PaygatePk
         return base_url if base_url
 
         PaygatePk::PayFast::Endpoints.base_url(environment)
+      end
+    end
+
+    # Per-provider config for Easypaisa (REST without RSA).
+    #
+    # Required for any call: username + password + store_id. account_num
+    # is required for Inquiry only (it's the merchant's EWP Account #
+    # found on the Profile page of the Easypaisa Merchant Portal).
+    class EasyPaisaConfig
+      ENVIRONMENTS = %i[sandbox production].freeze
+
+      attr_accessor :username, :password, :store_id, :account_num, :base_url
+      attr_reader :environment
+
+      def initialize
+        @environment = :sandbox
+        @username    = nil
+        @password    = nil
+        @store_id    = nil
+        @account_num = nil
+        @base_url    = nil
+      end
+
+      def environment=(env)
+        sym = env&.to_sym
+        unless ENVIRONMENTS.include?(sym)
+          raise ArgumentError,
+                "environment must be one of #{ENVIRONMENTS.inspect}, got #{env.inspect}"
+        end
+        @environment = sym
+      end
+
+      def resolved_base_url
+        return base_url if base_url
+
+        PaygatePk::EasyPaisa::Endpoints.base_url(environment)
       end
     end
   end

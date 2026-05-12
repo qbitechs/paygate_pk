@@ -8,7 +8,8 @@ module PaygatePk
   module Coercions
     module_function
 
-    DATE_ISO = "%Y-%m-%d"
+    DATE_ISO            = "%Y-%m-%d"
+    EASYPAISA_TIMESTAMP = "%Y%m%d %H%M%S"
 
     # Returns "YYYY-MM-DD" (PayFast's ORDER_DATE format) for Date/Time/DateTime
     # or a String already in that shape. nil-tolerant.
@@ -32,6 +33,23 @@ module PaygatePk
       case value
       when Float, Rational, BigDecimal then format("%g", value)
       else value.to_s
+      end
+    end
+
+    # Returns "yyyymmdd HHmmss" -- Easypaisa's tokenExpiry format
+    # (per the REST without RSA Integration Guide, Initiate OTC
+    # Transaction request parameters). Accepts Date/Time/DateTime or a
+    # String already in the right shape. nil-tolerant.
+    def to_easypaisa_timestamp(value)
+      return nil if value.nil?
+      return value if value.is_a?(String) && value.match?(/\A\d{8} \d{6}\z/)
+
+      case value
+      when Time, DateTime then value.strftime(EASYPAISA_TIMESTAMP)
+      when Date           then value.to_time.strftime(EASYPAISA_TIMESTAMP)
+      when String         then DateTime.parse(value).strftime(EASYPAISA_TIMESTAMP)
+      else
+        raise ArgumentError, "cannot coerce #{value.inspect} to Easypaisa timestamp"
       end
     end
 
