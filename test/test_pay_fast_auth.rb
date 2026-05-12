@@ -8,10 +8,10 @@ class TestPayFastAuth < Minitest::Test
   def test_get_access_token_success
     configure_payfast!(base_url: "https://example.test")
     expected_form = {
-      "MERCHANT_ID"   => "M123",
-      "SECURED_KEY"   => "SKEY",
-      "BASKET_ID"     => "B-1",
-      "TXNAMT"        => "1500",
+      "MERCHANT_ID" => "M123",
+      "SECURED_KEY" => "SKEY",
+      "BASKET_ID" => "B-1",
+      "TXNAMT" => "1500",
       "CURRENCY_CODE" => "PKR"
     }
 

@@ -32,21 +32,21 @@ module PaygatePk
       # typo from the PayFast spec — we mirror what the gateway accepts,
       # not what looks correct.
       SHIPPING_FIELDS = {
-        name:        "SHIPPING_CUSTOMER_NAME",
-        address_1:   "SHIPPING_ADDRESS_1",
-        address_2:   "SHIPPING_ADDRESS_2",
-        state:       "SHIPPING_STATE_PROVINCE",
-        city:        "SHIPPING_ADDRESS_CITU",
+        name: "SHIPPING_CUSTOMER_NAME",
+        address_1: "SHIPPING_ADDRESS_1",
+        address_2: "SHIPPING_ADDRESS_2",
+        state: "SHIPPING_STATE_PROVINCE",
+        city: "SHIPPING_ADDRESS_CITU",
         postal_code: "SHIPPING_POSTALCODE",
-        method:      "SHIPPING_METHOD"
+        method: "SHIPPING_METHOD"
       }.freeze
 
       BILLING_FIELDS = {
-        name:        "BILLING_CUSTOMER_NAME",
-        city:        "BILLING_ADDRESS_CITY",
-        address_1:   "BILLING_ADDRESS_1",
-        address_2:   "BILLING_ADDRESS_2",
-        state:       "BILLING_STATE_PROVINCE",
+        name: "BILLING_CUSTOMER_NAME",
+        city: "BILLING_ADDRESS_CITY",
+        address_1: "BILLING_ADDRESS_1",
+        address_2: "BILLING_ADDRESS_2",
+        state: "BILLING_STATE_PROVINCE",
         postal_code: "BILLING_POSTALCODE"
       }.freeze
 
@@ -59,15 +59,14 @@ module PaygatePk
         @auth   = auth
       end
 
-      # rubocop:disable Metrics/MethodLength
       def build(basket_id:, amount:, customer:, success_url:, failure_url:, description:,
                 currency: nil, order_date: nil, checkout_url: nil, store_id: nil,
                 items: [], recurring: false, tran_type: nil, processing_type: nil,
                 instrument_token: nil, shipping: nil, billing: nil, country: nil,
                 customer_ip: nil, merchant_customer_id: nil, merchant_user_agent: nil,
                 transaction_instrument: nil, extra_fields: {})
-        currency       ||= PaygatePk.config.default_currency
-        order_date_str   = Coercions.to_iso_date(order_date) || Date.today.strftime("%Y-%m-%d")
+        currency ||= PaygatePk.config.default_currency
+        order_date_str = Coercions.to_iso_date(order_date) || Date.today.strftime("%Y-%m-%d")
 
         ensure_config!
         ensure_args!(basket_id: basket_id, amount: amount, customer: customer,
@@ -76,44 +75,43 @@ module PaygatePk
         token = auth.call(basket_id: basket_id, amount: amount, currency: currency)
 
         fields = build_fields(
-          token:                token.value,
-          basket_id:            basket_id,
-          amount:               amount,
-          currency:             currency,
-          customer:             customer,
-          success_url:          success_url,
-          failure_url:          failure_url,
-          checkout_url:         checkout_url,
-          description:          description,
-          order_date_str:       order_date_str,
-          store_id:             store_id,
-          items:                items,
-          recurring:            recurring,
-          tran_type:            tran_type,
-          processing_type:      processing_type,
-          instrument_token:     instrument_token,
+          token: token.value,
+          basket_id: basket_id,
+          amount: amount,
+          currency: currency,
+          customer: customer,
+          success_url: success_url,
+          failure_url: failure_url,
+          checkout_url: checkout_url,
+          description: description,
+          order_date_str: order_date_str,
+          store_id: store_id,
+          items: items,
+          recurring: recurring,
+          tran_type: tran_type,
+          processing_type: processing_type,
+          instrument_token: instrument_token,
           transaction_instrument: transaction_instrument,
-          shipping:             shipping,
-          billing:              billing,
-          country:              country,
-          customer_ip:          customer_ip,
+          shipping: shipping,
+          billing: billing,
+          country: country,
+          customer_ip: customer_ip,
           merchant_customer_id: merchant_customer_id,
-          merchant_user_agent:  merchant_user_agent,
-          extra_fields:         extra_fields
+          merchant_user_agent: merchant_user_agent,
+          extra_fields: extra_fields
         )
 
         Contracts::RedirectRequest.new(
-          provider:    :pay_fast,
-          action_url:  Endpoints.post_transaction_url(@config.resolved_base_url),
+          provider: :pay_fast,
+          action_url: Endpoints.post_transaction_url(@config.resolved_base_url),
           http_method: :post,
-          fields:      fields,
-          basket_id:   basket_id.to_s,
-          amount:      Coercions.to_amount_string(amount),
-          token:       token.value,
-          raw:         token.raw
+          fields: fields,
+          basket_id: basket_id.to_s,
+          amount: Coercions.to_amount_string(amount),
+          token: token.value,
+          raw: token.raw
         )
       end
-      # rubocop:enable Metrics/MethodLength
 
       private
 
@@ -131,6 +129,7 @@ module PaygatePk
         raise PaygatePk::ConfigurationError, "PayFast config missing: #{missing.join(", ")}"
       end
 
+      # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def ensure_args!(basket_id:, amount:, customer:, success_url:, failure_url:, description:)
         missing = []
         missing << :basket_id   if Coercions.blank?(basket_id)
@@ -138,12 +137,8 @@ module PaygatePk
         missing << :success_url if Coercions.blank?(success_url)
         missing << :failure_url if Coercions.blank?(failure_url)
         missing << :description if Coercions.blank?(description)
-        if !customer.is_a?(Hash) || Coercions.blank?(customer[:mobile])
-          missing << "customer.mobile"
-        end
-        if !customer.is_a?(Hash) || Coercions.blank?(customer[:email])
-          missing << "customer.email"
-        end
+        missing << "customer.mobile" if !customer.is_a?(Hash) || Coercions.blank?(customer[:mobile])
+        missing << "customer.email" if !customer.is_a?(Hash) || Coercions.blank?(customer[:email])
         return if missing.empty?
 
         raise PaygatePk::ValidationError.new(
@@ -151,6 +146,7 @@ module PaygatePk
           details: { missing: missing }
         )
       end
+      # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
       def build_fields(**opts)
         fields = {}
@@ -163,6 +159,7 @@ module PaygatePk
         fields
       end
 
+      # rubocop:disable Metrics/AbcSize
       def add_mandatory_fields!(fields, opts)
         fields["MERCHANT_ID"]            = @config.merchant_id
         fields["MERCHANT_NAME"]          = @config.merchant_name
@@ -184,12 +181,13 @@ module PaygatePk
         fields["CURRENCY_CODE"]          = opts[:currency]
         fields["TRAN_TYPE"]              = opts[:tran_type] || @config.tran_type
       end
+      # rubocop:enable Metrics/AbcSize
 
-      # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def add_optional_simple_fields!(fields, opts)
-        fields["CHECKOUT_URL"]           = opts[:checkout_url]                  if opts[:checkout_url]
+        fields["CHECKOUT_URL"]           = opts[:checkout_url] if opts[:checkout_url]
         store_id                         = opts[:store_id] || @config.store_id
-        fields["STORE_ID"]               = store_id                             if Coercions.present?(store_id)
+        fields["STORE_ID"]               = store_id if Coercions.present?(store_id)
         fields["RECURRING_TXN"]          = opts[:recurring] ? "TRUE" : "FALSE"
         fields["CUSTOMER_NAME"]          = opts[:customer][:name].to_s          if opts[:customer][:name]
         fields["CUSTOMER_IPADDRESS"]     = opts[:customer_ip]                   if opts[:customer_ip]
@@ -200,7 +198,7 @@ module PaygatePk
         fields["INSTRUMENT_TOKEN"]       = opts[:instrument_token]              if opts[:instrument_token]
         fields["Transaction_Instrument"] = opts[:transaction_instrument].to_s   if opts[:transaction_instrument]
       end
-      # rubocop:enable Metrics/AbcSize
+      # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
       def add_address_fields!(fields, prefix, hash)
         map = prefix == "SHIPPING" ? SHIPPING_FIELDS : BILLING_FIELDS
@@ -215,7 +213,7 @@ module PaygatePk
           fields["ITEMS[#{i}][SKU]"]   = item[:sku].to_s                       if item[:sku]
           fields["ITEMS[#{i}][NAME]"]  = item[:name].to_s                      if item[:name]
           fields["ITEMS[#{i}][PRICE]"] = Coercions.to_amount_string(item[:price]) if item[:price]
-          fields["ITEMS[#{i}][QTY]"]   = item[:qty].to_s                       if item[:qty]
+          fields["ITEMS[#{i}][QTY]"]   = item[:qty].to_s if item[:qty]
         end
       end
 

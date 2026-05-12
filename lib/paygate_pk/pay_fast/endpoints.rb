@@ -11,7 +11,7 @@ module PaygatePk
     # to override the env-derived value.
     module Endpoints
       URLS = {
-        sandbox:    "https://ipguat.apps.net.pk",
+        sandbox: "https://ipguat.apps.net.pk",
         # PayFast has not published an official production base URL in
         # the v2.3 doc; merchants typically receive it on go-live.
         # Configure via `c.pay_fast.base_url = "..."` until then.

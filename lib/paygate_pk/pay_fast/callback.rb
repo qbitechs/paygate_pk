@@ -40,7 +40,7 @@ module PaygatePk
         # ActionController::Parameters and HashWithIndifferentAccess both
         # respond to #to_h; fall back to dup for plain Hashes.
         source = hash.respond_to?(:to_unsafe_h) ? hash.to_unsafe_h : hash.to_h
-        source.each_with_object({}) { |(k, v), out| out[k.to_s.downcase] = v }
+        source.transform_keys { |k| k.to_s.downcase }
       end
 
       def ensure_required!(params)
@@ -52,33 +52,33 @@ module PaygatePk
 
       def ensure_signature!(params)
         expected = PaygatePk::Util::Signature::PayFast.validation_hash(
-          basket_id:           params["basket_id"],
+          basket_id: params["basket_id"],
           merchant_secret_key: @config.secured_key,
-          merchant_id:         @config.merchant_id,
-          payfast_err_code:    params["err_code"]
+          merchant_id: @config.merchant_id,
+          payfast_err_code: params["err_code"]
         )
         return if PaygatePk::Util::Security.secure_compare(expected, params["validation_hash"].to_s)
 
         raise PaygatePk::SignatureError, "invalid validation_hash"
       end
 
-      def build_event(p, raw)
+      def build_event(params, raw)
         Contracts::CallbackEvent.new(
-          provider:          :pay_fast,
-          transaction_id:    p["transaction_id"],
-          basket_id:         p["basket_id"],
-          order_date:        p["order_date"],
-          approved:          p["err_code"] == SUCCESS_CODE,
-          code:              p["err_code"],
-          message:           p["err_msg"],
-          amount:            p["transaction_amount"],
-          merchant_amount:   p["merchant_amount"],
-          discounted_amount: p["discounted_amount"],
-          currency:          p["transaction_currency"],
-          payment_method:    p["paymentname"],
-          instrument_token:  p["instrument_token"],
-          recurring:         truthy?(p["recurring_txn"]),
-          raw:               raw
+          provider: :pay_fast,
+          transaction_id: params["transaction_id"],
+          basket_id: params["basket_id"],
+          order_date: params["order_date"],
+          approved: params["err_code"] == SUCCESS_CODE,
+          code: params["err_code"],
+          message: params["err_msg"],
+          amount: params["transaction_amount"],
+          merchant_amount: params["merchant_amount"],
+          discounted_amount: params["discounted_amount"],
+          currency: params["transaction_currency"],
+          payment_method: params["paymentname"],
+          instrument_token: params["instrument_token"],
+          recurring: truthy?(params["recurring_txn"]),
+          raw: raw
         )
       end
 

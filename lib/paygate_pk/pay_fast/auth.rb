@@ -61,10 +61,10 @@ module PaygatePk
 
       def payload(basket_id, amount, currency)
         {
-          "MERCHANT_ID"   => @config.merchant_id,
-          "SECURED_KEY"   => @config.secured_key,
-          "BASKET_ID"     => basket_id.to_s,
-          "TXNAMT"        => Coercions.to_amount_string(amount),
+          "MERCHANT_ID" => @config.merchant_id,
+          "SECURED_KEY" => @config.secured_key,
+          "BASKET_ID" => basket_id.to_s,
+          "TXNAMT" => Coercions.to_amount_string(amount),
           "CURRENCY_CODE" => currency
         }
       end

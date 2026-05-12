@@ -20,10 +20,10 @@ class TestPayFastRedirect < Minitest::Test
 
   def base_args
     {
-      basket_id:   "B-1001",
-      amount:      1500,
+      basket_id: "B-1001",
+      amount: 1500,
       description: "Order #1001",
-      customer:    { mobile: "03001234567", email: "buyer@example.com" },
+      customer: { mobile: "03001234567", email: "buyer@example.com" },
       success_url: "https://app/success",
       failure_url: "https://app/failure"
     }

@@ -47,8 +47,8 @@ module PaygatePk
       def conn
         @conn ||= Faraday.new(url: @base_url) do |f|
           f.request :retry,
-                    max:            @retry_conf[:max] || 2,
-                    interval:       @retry_conf[:interval] || 0.2,
+                    max: @retry_conf[:max] || 2,
+                    interval: @retry_conf[:interval] || 0.2,
                     backoff_factor: @retry_conf[:backoff_factor] || 2.0,
                     retry_statuses: @retry_conf[:retry_statuses] || [429, 500, 502, 503, 504]
           f.request :url_encoded
@@ -57,6 +57,7 @@ module PaygatePk
         end
       end
 
+      # rubocop:disable Metrics/AbcSize
       def request(method, path, json: nil, form: nil, params: nil, headers: {})
         resp = conn.run_request(method, path, nil, merged_headers(headers)) do |req|
           apply_timeouts(req)
@@ -74,9 +75,10 @@ module PaygatePk
         raise PaygatePk::HTTPError.new(
           e.message,
           status: e.response&.dig(:status),
-          body:   e.response&.dig(:body)
+          body: e.response&.dig(:body)
         )
       end
+      # rubocop:enable Metrics/AbcSize
 
       def merged_headers(headers)
         base_headers.merge(headers)
@@ -101,7 +103,7 @@ module PaygatePk
         ua = PaygatePk.config.user_agent.to_s
         ua = "paygate_pk" if ua.empty? # PayFast rejects empty user agents
         {
-          "User-Agent"   => ua,
+          "User-Agent" => ua,
           "X-Request-Id" => SecureRandom.uuid
         }.merge(@headers)
       end

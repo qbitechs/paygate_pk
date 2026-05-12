@@ -30,9 +30,7 @@ module PaygatePk
       return nil if value.nil?
 
       case value
-      when Integer then value.to_s
       when Float, Rational, BigDecimal then format("%g", value)
-      when String  then value
       else value.to_s
       end
     end

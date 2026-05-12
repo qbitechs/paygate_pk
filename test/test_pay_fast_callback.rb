@@ -13,19 +13,19 @@ class TestPayFastCallback < Minitest::Test
       merchant_id: "MID123", payfast_err_code: @err_code
     )
     @params = {
-      "basket_id"            => @basket_id,
-      "err_code"             => @err_code,
-      "validation_hash"      => @validation,
-      "transaction_id"       => "TXN789",
-      "order_date"           => "2026-05-12",
-      "transaction_amount"   => "1000.00",
-      "merchant_amount"      => "1000.00",
-      "discounted_amount"    => "0.00",
+      "basket_id" => @basket_id,
+      "err_code" => @err_code,
+      "validation_hash" => @validation,
+      "transaction_id" => "TXN789",
+      "order_date" => "2026-05-12",
+      "transaction_amount" => "1000.00",
+      "merchant_amount" => "1000.00",
+      "discounted_amount" => "0.00",
       "transaction_currency" => "PKR",
-      "Instrument_token"     => "INST123",
-      "Recurring_txn"        => "1",
-      "PaymentName"          => "card",
-      "err_msg"              => "Approved"
+      "Instrument_token" => "INST123",
+      "Recurring_txn" => "1",
+      "PaymentName" => "card",
+      "err_msg" => "Approved"
     }
   end
 
@@ -75,11 +75,11 @@ class TestPayFastCallback < Minitest::Test
 
   def test_handles_mixed_case_keys
     mixed = {
-      "Basket_Id"        => @basket_id,
-      "ERR_CODE"         => @err_code,
-      "VALIDATION_HASH"  => @validation,
-      "Transaction_Id"   => "TXN-X",
-      "RECURRING_TXN"    => "false",
+      "Basket_Id" => @basket_id,
+      "ERR_CODE" => @err_code,
+      "VALIDATION_HASH" => @validation,
+      "Transaction_Id" => "TXN-X",
+      "RECURRING_TXN" => "false",
       "Instrument_Token" => "INST-X"
     }
     event = PaygatePk::PayFast::Callback.verify!(mixed)
@@ -101,8 +101,8 @@ class TestPayFastCallback < Minitest::Test
 
   def test_accepts_action_controller_parameters_like_objects
     fake_params = Class.new do
-      def initialize(h); @h = h; end
-      def to_unsafe_h; @h; end
+      def initialize(h) = @h = h
+      def to_unsafe_h = @h
     end.new(@params)
 
     event = PaygatePk::PayFast::Callback.verify!(fake_params)

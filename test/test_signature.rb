@@ -13,10 +13,10 @@ class TestPayFastSignature < Minitest::Test
     )
 
     actual = PaygatePk::Util::Signature::PayFast.validation_hash(
-      basket_id:           basket_id,
+      basket_id: basket_id,
       merchant_secret_key: merchant_secret_key,
-      merchant_id:         merchant_id,
-      payfast_err_code:    payfast_err_code
+      merchant_id: merchant_id,
+      payfast_err_code: payfast_err_code
     )
 
     assert_equal expected, actual
@@ -26,10 +26,10 @@ class TestPayFastSignature < Minitest::Test
     # Example from Merchant Integration Guide v2.3 §3.2.3:
     #   "BAS-01|jdnkaabcks|102|000" -> e8192a7554dd699975adf39619c703a492392edf5e416a61e183866ecdf6a2a2
     actual = PaygatePk::Util::Signature::PayFast.validation_hash(
-      basket_id:           "BAS-01",
+      basket_id: "BAS-01",
       merchant_secret_key: "jdnkaabcks",
-      merchant_id:         "102",
-      payfast_err_code:    "000"
+      merchant_id: "102",
+      payfast_err_code: "000"
     )
     assert_equal "e8192a7554dd699975adf39619c703a492392edf5e416a61e183866ecdf6a2a2", actual
   end

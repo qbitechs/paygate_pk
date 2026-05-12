@@ -28,12 +28,25 @@ Metrics/MethodLength:
     - hash
     - heredoc
     - method_call
+  Exclude:
+    - "test/**/*"
 
 Metrics/AbcSize:
   Max: 25
+  Exclude:
+    - "test/**/*"
 
 Metrics/ParameterLists:
   CountKeywordArgs: false
 
 Metrics/ClassLength:
   Max: 200
+
+# PayFast field names use ADDRESS_1, ADDRESS_2 -- mirror them in the
+# option hashes so it's obvious how each key maps to the wire format.
+Naming/VariableNumber:
+  Enabled: false
+
+Naming/MethodParameterName:
+  Exclude:
+    - "test/**/*"

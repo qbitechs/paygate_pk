@@ -20,7 +20,7 @@ require_relative "paygate_pk/pay_fast/auth"
 require_relative "paygate_pk/pay_fast/redirect"
 require_relative "paygate_pk/pay_fast/callback"
 
-require_relative "paygate_pk/rails/railtie" if defined?(::Rails::Railtie)
+require_relative "paygate_pk/rails/railtie" if defined?(Rails::Railtie)
 
 # Unified Ruby/Rails client for Pakistani payment gateways.
 #
