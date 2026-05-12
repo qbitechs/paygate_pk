@@ -1,5 +1,11 @@
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.1
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "coverage/**/*"
+    - "vendor/**/*"
+    - "*.gemspec"
 
 Style/StringLiterals:
   Enabled: true
@@ -9,16 +15,38 @@ Style/StringLiteralsInInterpolation:
   Enabled: true
   EnforcedStyle: double_quotes
 
+Style/Documentation:
+  Enabled: false
+
 Layout/LineLength:
   Max: 120
 
 Metrics/MethodLength:
-  Max: 20 # Example: Set maximum method length to 15 lines
+  Max: 25
   CountAsOne:
     - array
     - hash
     - heredoc
     - method_call
+  Exclude:
+    - "test/**/*"
 
 Metrics/AbcSize:
-  Max: 20
+  Max: 25
+  Exclude:
+    - "test/**/*"
+
+Metrics/ParameterLists:
+  CountKeywordArgs: false
+
+Metrics/ClassLength:
+  Max: 200
+
+# PayFast field names use ADDRESS_1, ADDRESS_2 -- mirror them in the
+# option hashes so it's obvious how each key maps to the wire format.
+Naming/VariableNumber:
+  Enabled: false
+
+Naming/MethodParameterName:
+  Exclude:
+    - "test/**/*"

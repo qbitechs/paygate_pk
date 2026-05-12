@@ -2,9 +2,11 @@
 
 module PaygatePk
   class Error < StandardError; end
+
   class ConfigurationError < Error; end
 
-  # Raised when a request validation fails.
+  class CapabilityNotSupported < Error; end
+
   class ValidationError < Error
     attr_reader :details
 
@@ -14,7 +16,6 @@ module PaygatePk
     end
   end
 
-  # Raised for HTTP errors, e.g. non-2xx responses.
   class HTTPError < Error
     attr_reader :status, :body
 
@@ -25,7 +26,19 @@ module PaygatePk
     end
   end
 
+  class TimeoutError < HTTPError; end
+  class ConnectionError < HTTPError; end
+
   class AuthError < Error; end
   class SignatureError < Error; end
-  class ProviderError < Error; end
+
+  class ProviderError < Error
+    attr_reader :code, :response
+
+    def initialize(message = "provider error", code: nil, response: nil)
+      @code = code
+      @response = response
+      super(message)
+    end
+  end
 end
