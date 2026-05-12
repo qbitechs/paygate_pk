@@ -8,6 +8,10 @@ module PaygatePk
       DEFAULT_FORM_ID = "paygate-pk-redirect-form"
       SUBMIT_LABEL    = "Pay now"
 
+      OTC_VOUCHER_SUCCESS_CLASS = "paygate-pk-otc-voucher rounded-2xl border border-emerald-200 bg-emerald-50 p-6"
+      OTC_VOUCHER_FAILURE_CLASS = "paygate-pk-otc-voucher paygate-pk-otc-voucher--failed " \
+                                  "rounded-2xl border border-rose-200 bg-rose-50 p-6"
+
       # Renders the auto-submitting redirect form for any provider that
       # produces a Contracts::RedirectRequest.
       #
@@ -43,7 +47,8 @@ module PaygatePk
         return otc_voucher_failure(result, html) unless result.success? && result.payment_token.present?
 
         container_attrs = otc_voucher_attrs(html, success: true)
-        body = otc_voucher_success_body(result, title: title, instructions: instructions || default_otc_instructions(result))
+        body = otc_voucher_success_body(result, title: title,
+                                                instructions: instructions || default_otc_instructions(result))
 
         content_tag(:div, body, container_attrs)
       end
@@ -77,39 +82,36 @@ module PaygatePk
       # ── OTC voucher rendering ─────────────────────────────────────
 
       def otc_voucher_attrs(html, success:)
-        default_class = if success
-          "paygate-pk-otc-voucher rounded-2xl border border-emerald-200 bg-emerald-50 p-6"
-        else
-          "paygate-pk-otc-voucher paygate-pk-otc-voucher--failed rounded-2xl border border-rose-200 bg-rose-50 p-6"
-        end
-
-        html.merge(class: [ default_class, html[:class] ].compact.join(" "))
+        default_class = success ? OTC_VOUCHER_SUCCESS_CLASS : OTC_VOUCHER_FAILURE_CLASS
+        html.merge(class: [default_class, html[:class]].compact.join(" "))
       end
 
       def otc_voucher_success_body(result, title:, instructions:)
         safe_join([
-          content_tag(:h3, title, class: "text-base font-bold text-slate-900 mb-4"),
-          otc_voucher_token_block(result),
-          otc_voucher_meta(result),
-          otc_voucher_instructions(instructions)
-        ])
+                    content_tag(:h3, title, class: "text-base font-bold text-slate-900 mb-4"),
+                    otc_voucher_token_block(result),
+                    otc_voucher_meta(result),
+                    otc_voucher_instructions(instructions)
+                  ])
       end
 
       def otc_voucher_token_block(result)
         content_tag(:div, class: "rounded-xl bg-white border border-emerald-200 px-5 py-4 mb-4 text-center") do
           safe_join([
-            content_tag(:p, "Payment token", class: "text-xs font-semibold uppercase tracking-wide text-slate-500"),
-            content_tag(:p, result.payment_token, class: "mt-1 font-mono text-2xl font-bold tracking-widest text-slate-900")
-          ])
+                      content_tag(:p, "Payment token",
+                                  class: "text-xs font-semibold uppercase tracking-wide text-slate-500"),
+                      content_tag(:p, result.payment_token,
+                                  class: "mt-1 font-mono text-2xl font-bold tracking-widest text-slate-900")
+                    ])
         end
       end
 
       def otc_voucher_meta(result)
         rows = []
-        rows << [ "Amount",  "PKR #{result.amount}" ]
-        rows << [ "Mobile",  result.customer[:msisdn] ] if result.customer[:msisdn].present?
-        rows << [ "Expires", otc_voucher_format_time(result.expires_at) ] if result.expires_at
-        rows << [ "Order",   result.basket_id ]
+        rows << ["Amount",  "PKR #{result.amount}"]
+        rows << ["Mobile",  result.customer[:msisdn]] if result.customer[:msisdn].present?
+        rows << ["Expires", otc_voucher_format_time(result.expires_at)] if result.expires_at
+        rows << ["Order",   result.basket_id]
 
         content_tag(:dl, class: "grid grid-cols-2 gap-y-2 text-sm mb-4") do
           safe_join(rows.flat_map do |label, value|
@@ -138,11 +140,11 @@ module PaygatePk
 
       def otc_voucher_failure(result, html)
         container_attrs = otc_voucher_attrs(html, success: false)
+        message = result.response_message.presence || "Easypaisa did not issue a token for this order."
         body = safe_join([
-          content_tag(:h3, "Voucher unavailable", class: "text-base font-bold text-rose-900 mb-2"),
-          content_tag(:p, result.response_message.presence || "Easypaisa did not issue a token for this order.",
-                      class: "text-sm text-rose-700")
-        ])
+                           content_tag(:h3, "Voucher unavailable", class: "text-base font-bold text-rose-900 mb-2"),
+                           content_tag(:p, message, class: "text-sm text-rose-700")
+                         ])
         content_tag(:div, body, container_attrs)
       end
 

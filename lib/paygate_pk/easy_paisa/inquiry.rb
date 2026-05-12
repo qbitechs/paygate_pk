@@ -34,8 +34,8 @@ module PaygatePk
         ensure_args!(order_id: order_id, account_num: account_num)
 
         body = {
-          "orderId"    => order_id.to_s,
-          "storeId"    => @config.store_id.to_s,
+          "orderId" => order_id.to_s,
+          "storeId" => @config.store_id.to_s,
           "accountNum" => account_num.to_s
         }
 
@@ -64,22 +64,22 @@ module PaygatePk
       def build_result(order_id, account_num, resp)
         resp = {} unless resp.is_a?(Hash)
         Contracts::InquiryResult.new(
-          provider:               :easy_paisa,
-          basket_id:              order_id.to_s,
-          account_num:            account_num.to_s,
-          store_id:               resp["storeId"]&.to_s,
-          store_name:             resp["storeName"],
-          payment_token:          resp["paymentToken"],
-          transaction_status:     resp["transactionStatus"],
-          transaction_amount:     resp["transactionAmount"]&.to_s,
-          transaction_date_time:  resp["transactionDateTime"],
-          payment_token_expiry:   resp["paymentTokenExpiryDateTime"],
-          msisdn:                 resp["msisdn"],
-          payment_mode:           resp["paymentMode"],
-          response_code:          resp["responseCode"],
-          response_message:       resp["responseDesc"],
-          success_code:           client.success_code,
-          raw:                    resp
+          provider: :easy_paisa,
+          basket_id: order_id.to_s,
+          account_num: account_num.to_s,
+          store_id: resp["storeId"]&.to_s,
+          store_name: resp["storeName"],
+          payment_token: resp["paymentToken"],
+          transaction_status: resp["transactionStatus"],
+          transaction_amount: resp["transactionAmount"]&.to_s,
+          transaction_date_time: resp["transactionDateTime"],
+          payment_token_expiry: resp["paymentTokenExpiryDateTime"],
+          msisdn: resp["msisdn"],
+          payment_mode: resp["paymentMode"],
+          response_code: resp["responseCode"],
+          response_message: resp["responseDesc"],
+          success_code: client.success_code,
+          raw: resp
         )
       end
     end

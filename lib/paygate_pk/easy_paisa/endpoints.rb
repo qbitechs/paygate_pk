@@ -10,7 +10,7 @@ module PaygatePk
     # vendor's "REST APIs without RSA Integration Guide".
     module Endpoints
       URLS = {
-        sandbox:    "https://easypaystg.easypaisa.com.pk",
+        sandbox: "https://easypaystg.easypaisa.com.pk",
         # Easypaisa has not published an official production base URL in
         # the public REST guide; merchants typically receive it on
         # go-live. Configure via `c.easy_paisa.base_url = "..."` until

@@ -90,13 +90,13 @@ module PaygatePk
 
       def build_body(order_id:, amount:, msisdn:, email:, token_expiry:, optional:)
         body = {
-          "orderId"           => order_id.to_s,
-          "storeId"           => @config.store_id.to_s,
+          "orderId" => order_id.to_s,
+          "storeId" => @config.store_id.to_s,
           "transactionAmount" => Coercions.to_amount_string(amount),
-          "transactionType"   => TRANSACTION_TYPE,
-          "msisdn"            => msisdn.to_s,
-          "emailAddress"      => email.to_s,
-          "tokenExpiry"       => token_expiry
+          "transactionType" => TRANSACTION_TYPE,
+          "msisdn" => msisdn.to_s,
+          "emailAddress" => email.to_s,
+          "tokenExpiry" => token_expiry
         }
         add_optionals!(body, optional)
         body
@@ -116,21 +116,21 @@ module PaygatePk
       def build_result(order_id:, amount:, msisdn:, email:, formatted_expiry:, resp:)
         resp = {} unless resp.is_a?(Hash)
         Contracts::ChargeResult.new(
-          provider:        :easy_paisa,
-          basket_id:       order_id.to_s,
-          transaction_id:  nil,
-          payment_token:   resp["paymentToken"],
-          payment_mode:    :otc,
-          expires_at:      parse_easypaisa_time(resp["paymentTokenExpiryDateTime"]) ||
+          provider: :easy_paisa,
+          basket_id: order_id.to_s,
+          transaction_id: nil,
+          payment_token: resp["paymentToken"],
+          payment_mode: :otc,
+          expires_at: parse_easypaisa_time(resp["paymentTokenExpiryDateTime"]) ||
                              DateTime.strptime(formatted_expiry, Coercions::EASYPAISA_TIMESTAMP).to_time,
-          transacted_at:   parse_easypaisa_time(resp["transactionDateTime"]),
-          amount:          Coercions.to_amount_string(amount),
-          currency:        PaygatePk.config.default_currency,
-          customer:        { msisdn: msisdn.to_s, email: email.to_s },
-          response_code:   resp["responseCode"],
+          transacted_at: parse_easypaisa_time(resp["transactionDateTime"]),
+          amount: Coercions.to_amount_string(amount),
+          currency: PaygatePk.config.default_currency,
+          customer: { msisdn: msisdn.to_s, email: email.to_s },
+          response_code: resp["responseCode"],
           response_message: resp["responseDesc"],
-          success_code:    client.success_code,
-          raw:             resp
+          success_code: client.success_code,
+          raw: resp
         )
       end
 

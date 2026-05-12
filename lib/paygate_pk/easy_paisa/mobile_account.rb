@@ -66,12 +66,12 @@ module PaygatePk
 
       def build_body(order_id:, amount:, mobile_account_no:, email:, optional:)
         body = {
-          "orderId"           => order_id.to_s,
-          "storeId"           => @config.store_id.to_s,
+          "orderId" => order_id.to_s,
+          "storeId" => @config.store_id.to_s,
           "transactionAmount" => Coercions.to_amount_string(amount),
-          "transactionType"   => TRANSACTION_TYPE,
-          "mobileAccountNo"   => mobile_account_no.to_s,
-          "emailAddress"      => email.to_s
+          "transactionType" => TRANSACTION_TYPE,
+          "mobileAccountNo" => mobile_account_no.to_s,
+          "emailAddress" => email.to_s
         }
         add_optionals!(body, optional)
         body
@@ -91,20 +91,20 @@ module PaygatePk
       def build_result(order_id:, amount:, mobile_account_no:, email:, resp:)
         resp = {} unless resp.is_a?(Hash)
         Contracts::ChargeResult.new(
-          provider:        :easy_paisa,
-          basket_id:       order_id.to_s,
-          transaction_id:  resp["transactionId"],
-          payment_token:   nil,
-          payment_mode:    :mobile_account,
-          expires_at:      nil,
-          transacted_at:   parse_easypaisa_time(resp["transactionDateTime"]),
-          amount:          Coercions.to_amount_string(amount),
-          currency:        PaygatePk.config.default_currency,
-          customer:        { mobile_account_no: mobile_account_no.to_s, email: email.to_s },
-          response_code:   resp["responseCode"],
+          provider: :easy_paisa,
+          basket_id: order_id.to_s,
+          transaction_id: resp["transactionId"],
+          payment_token: nil,
+          payment_mode: :mobile_account,
+          expires_at: nil,
+          transacted_at: parse_easypaisa_time(resp["transactionDateTime"]),
+          amount: Coercions.to_amount_string(amount),
+          currency: PaygatePk.config.default_currency,
+          customer: { mobile_account_no: mobile_account_no.to_s, email: email.to_s },
+          response_code: resp["responseCode"],
           response_message: resp["responseDesc"],
-          success_code:    client.success_code,
-          raw:             resp
+          success_code: client.success_code,
+          raw: resp
         )
       end
 
