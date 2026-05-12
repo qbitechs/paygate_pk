@@ -15,23 +15,33 @@ begin
     enable_coverage :branch
   end
 rescue LoadError
-  # ok if not installed in some envs
+  # OK if not installed in some envs
 end
 
 module TestHelpers
   module Config
+    SANDBOX_BASE_URL = "https://ipguat.apps.net.pk"
+
     def reset_paygate_config!
-      PaygatePk.instance_variable_set(:@config, PaygatePk::Config.new)
+      PaygatePk.reset_config!
     end
 
-    def configure_payfast!(base_url: "https://example.test", merchant_id: "M123", secured_key: "SKEY",
-                           api_base_url: nil)
+    def configure_payfast!(
+      base_url: SANDBOX_BASE_URL,
+      merchant_id: "M123",
+      secured_key: "SKEY",
+      merchant_name: "Acme Store",
+      store_id: nil,
+      environment: :sandbox
+    )
       PaygatePk.configure do |c|
-        c.default_currency = "PKR"
-        c.pay_fast.base_url    = base_url
-        c.pay_fast.merchant_id = merchant_id
-        c.pay_fast.secured_key = secured_key
-        c.pay_fast.api_base_url = api_base_url
+        c.default_currency           = "PKR"
+        c.pay_fast.environment       = environment
+        c.pay_fast.base_url          = base_url
+        c.pay_fast.merchant_id       = merchant_id
+        c.pay_fast.secured_key       = secured_key
+        c.pay_fast.merchant_name     = merchant_name
+        c.pay_fast.store_id          = store_id
       end
     end
   end
