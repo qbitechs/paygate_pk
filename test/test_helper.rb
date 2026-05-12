@@ -48,6 +48,31 @@ module TestHelpers
         c.pay_fast.store_id          = store_id
       end
     end
+
+    EASYPAISA_SANDBOX_BASE_URL = "https://easypaystg.easypaisa.com.pk"
+
+    def configure_easypaisa!(
+      base_url: EASYPAISA_SANDBOX_BASE_URL,
+      username: "EP-USER",
+      password: "EP-PASS",
+      store_id: "43",
+      account_num: "654123987",
+      environment: :sandbox
+    )
+      PaygatePk.configure do |c|
+        c.default_currency        = "PKR"
+        c.easy_paisa.environment  = environment
+        c.easy_paisa.base_url     = base_url
+        c.easy_paisa.username     = username
+        c.easy_paisa.password     = password
+        c.easy_paisa.store_id     = store_id
+        c.easy_paisa.account_num  = account_num
+      end
+    end
+
+    def easypaisa_credentials_header(username: "EP-USER", password: "EP-PASS")
+      "Basic #{::Base64.strict_encode64("#{username}:#{password}")}"[6..]
+    end
   end
 end
 
