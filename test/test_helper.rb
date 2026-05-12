@@ -2,12 +2,10 @@
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
-require "minitest/autorun"
-require "webmock/minitest"
-require "bundler/setup"
-
-require "paygate_pk"
-
+# SimpleCov must be required BEFORE the code under test so it can
+# instrument the gem files at load time. Without this ordering most of
+# lib/ is loaded before the coverage tracker is even running, and the
+# resulting report reads ~40 % when actual coverage is much higher.
 begin
   require "simplecov"
   SimpleCov.start do
@@ -17,6 +15,12 @@ begin
 rescue LoadError
   # OK if not installed in some envs
 end
+
+require "minitest/autorun"
+require "webmock/minitest"
+require "bundler/setup"
+
+require "paygate_pk"
 
 module TestHelpers
   module Config
