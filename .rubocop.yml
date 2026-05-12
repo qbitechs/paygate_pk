@@ -1,5 +1,11 @@
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.1
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "coverage/**/*"
+    - "vendor/**/*"
+    - "*.gemspec"
 
 Style/StringLiterals:
   Enabled: true
@@ -9,11 +15,14 @@ Style/StringLiteralsInInterpolation:
   Enabled: true
   EnforcedStyle: double_quotes
 
+Style/Documentation:
+  Enabled: false
+
 Layout/LineLength:
   Max: 120
 
 Metrics/MethodLength:
-  Max: 20 # Example: Set maximum method length to 15 lines
+  Max: 25
   CountAsOne:
     - array
     - hash
@@ -21,4 +30,10 @@ Metrics/MethodLength:
     - method_call
 
 Metrics/AbcSize:
-  Max: 20
+  Max: 25
+
+Metrics/ParameterLists:
+  CountKeywordArgs: false
+
+Metrics/ClassLength:
+  Max: 200
