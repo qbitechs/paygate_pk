@@ -1,5 +1,92 @@
 # Changelog
 
+## [1.1.0] - 2026-05-12
+
+### Overview
+
+Easypaisa lands — three new REST endpoints + a Rails OTC voucher helper.
+Pure addition; nothing in 1.0 changes shape, no breaking changes.
+
+### Public API (new)
+
+```ruby
+# Mobile Account: customer authorises via OTP push to their Easypaisa wallet
+result  = PaygatePk::EasyPaisa::MobileAccount.charge(
+  order_id:          "lawzo-#{payment.id}",
+  amount:            1500,
+  mobile_account_no: "03001234567",
+  email:             "client@example.com"
+)
+result.success?       # response_code == "0000"
+result.transaction_id # Ericsson EWP ID
+
+# OTC voucher: customer pays cash at any Easypaisa shop
+voucher = PaygatePk::EasyPaisa::OTC.create(
+  order_id:     "lawzo-#{payment.id}",
+  amount:       1500,
+  msisdn:       "03001234567",
+  email:        "client@example.com",
+  token_expiry: 7.days.from_now
+)
+voucher.payment_token   # "40933012" -- show this to the customer
+voucher.expires_at      # Time
+
+# Inquiry: poll status until PAID
+status = PaygatePk::EasyPaisa::Inquiry.fetch(
+  order_id:    "lawzo-...",
+  account_num: PaygatePk.config.easy_paisa.account_num
+)
+status.paid?
+status.pending?
+```
+
+Rails OTC voucher helper:
+
+```erb
+<%= paygate_pk_otc_voucher(@voucher) %>
+```
+
+### Added
+
+- `PaygatePk::EasyPaisa::MobileAccount.charge` — `initiate-ma-transaction`.
+- `PaygatePk::EasyPaisa::OTC.create` — `initiate-otc-transaction`. Accepts
+  Date/Time/DateTime/String for `token_expiry`, formats to
+  `"yyyymmdd HHmmss"` internally, validates future-dated up-front.
+- `PaygatePk::EasyPaisa::Inquiry.fetch` — `inquire-transaction`. Returns
+  `InquiryResult` with `paid?` / `failed?` / `pending?` / `expired?` /
+  `blocked?` / `reversed?` predicates covering every documented
+  `transactionStatus` value.
+- `PaygatePk::EasyPaisa::Endpoints` — sandbox URL baked in;
+  `c.easy_paisa.base_url = "..."` override for production (Easypaisa
+  hands the host out at go-live).
+- `Contracts::ChargeResult` — universal value object for any REST-style
+  "take a payment" call. Carries `success?`, `failed?`, `otc?`,
+  `mobile_account?` predicates.
+- `Contracts::InquiryResult` — universal value object for status lookups.
+- `Config::EasyPaisaConfig` — `environment` / `username` / `password` /
+  `store_id` / `account_num` / `base_url` override.
+- `Util::Credentials.basic(user, pass)` — `Base64.strict_encode64`
+  helper for Easypaisa's `Credentials` HTTP header.
+- `Coercions.to_easypaisa_timestamp` — formats Date/Time to the
+  `"yyyymmdd HHmmss"` format `tokenExpiry` demands.
+- `PaygatePk::Rails::ViewHelpers#paygate_pk_otc_voucher(charge_result)`
+  — prints a styled voucher (token, amount, mobile, expiry, order id,
+  instructions). Renders a failure card with `response_message` when
+  the upstream call returned a non-`0000` `responseCode`, never a fake
+  token.
+
+### Deferred to 1.2
+
+- `EasyPaisa::Callback.verify!` — Easypaisa's integration guide mentions
+  IPN configuration in the merchant portal but does not ship the full
+  wire spec. Until that's published, host apps should poll
+  `Inquiry.fetch` after issuing an OTC voucher.
+
+### Not changed
+
+- Nothing in the PayFast surface; 1.0's contracts and call sites are
+  unchanged.
+
 ## [1.0.0] - 2026-05-12
 
 ### Overview
